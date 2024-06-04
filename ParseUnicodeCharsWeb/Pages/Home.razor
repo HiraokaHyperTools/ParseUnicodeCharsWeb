@@ -35,33 +35,35 @@
     {
         _text = args.Value + "";
 
-        Update();
+        UpdateTables();
     }
 
-    private void Update()
+    private void UpdateTables()
     {
         _utf16Chars = _text
             .ToCharArray()
             .Select((it, index) => new CharInfo(
-                index, 
-                it + "", 
-                $"U+{(ushort)it:X4}", 
+                index,
+                it + "",
+                $"U+{(ushort)it:X4}",
                 char.GetUnicodeCategory(it) + ""
             ))
             .ToArray();
 
         _utf32Chars = _text.EnumerateRunes()
             .Select((rune, Index) => new CharInfo(
-                Index, 
-                rune.ToString(), 
-                $"U+{rune.Value:X5}", 
+                Index,
+                rune.ToString(),
+                $"U+{rune.Value:X5}",
                 char.GetUnicodeCategory(rune.ToString(), 0) + ""
             ))
             .ToArray();
     }
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        Update();
+        _text = Query ?? "";
+
+        UpdateTables();
     }
 }
