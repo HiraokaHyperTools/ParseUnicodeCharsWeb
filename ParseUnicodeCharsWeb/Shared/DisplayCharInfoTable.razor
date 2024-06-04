@@ -1,0 +1,33 @@
+﻿@using ParseUnicodeCharsWeb.Helpers
+<table border="1" cellpadding="3">
+    <caption>@Caption</caption>
+    <thead>
+        <tr>
+            <th>Index</th>
+            <th>Char</th>
+            <th>Code</th>
+            <th>Ref</th>
+            <th>Category</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Table)
+        {
+            <tr>
+                <td align="right">@item.Index</td>
+                <td align="center">@item.CharDisplay</td>
+                <td>@item.CodeDisplay</td>
+                <td><a href="@($"https://codepoints.net/{item.CodeDisplay}")" target="_blank">🔗</a></td>
+                <td>@item.UnicodeCategory</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public IEnumerable<CharInfo> Table { get; set; } = Enumerable.Empty<CharInfo>();
+
+    [Parameter]
+    public string Caption { get; set; } = "";
+}

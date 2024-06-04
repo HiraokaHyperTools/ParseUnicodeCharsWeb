@@ -1,0 +1,67 @@
+﻿@page "/"
+@using System.Globalization
+
+<p>Enter text to parse</p>
+
+<textarea cols="40" rows="5" @oninput="HandleOnChange">@_text</textarea>
+
+<br style="clear:both;" />
+
+@if (_utf16Chars.Any())
+{
+    <div style="float:left; margin-right:1ex;">
+        <DisplayCharInfoTable Table="_utf16Chars" Caption="UTF-16 chars" />
+    </div>
+}
+@if (_utf32Chars.Any())
+{
+    <div style="float:left; margin-right:1ex;">
+        <DisplayCharInfoTable Table="_utf32Chars" Caption="UTF-32 chars" />
+    </div>
+}
+
+<br style="clear:both;" />
+
+@code {
+    [SupplyParameterFromQuery(Name = "q")]
+    [Parameter]
+    public string? Query { get; set; }
+
+    private string _text = "";
+    private IEnumerable<CharInfo> _utf16Chars = Enumerable.Empty<CharInfo>();
+    private IEnumerable<CharInfo> _utf32Chars = Enumerable.Empty<CharInfo>();
+
+    private void HandleOnChange(ChangeEventArgs args)
+    {
+        _text = args.Value + "";
+
+        Update();
+    }
+
+    private void Update()
+    {
+        _utf16Chars = _text
+            .ToCharArray()
+            .Select((it, index) => new CharInfo(
+                index, 
+                it + "", 
+                $"U+{(ushort)it:X4}", 
+                char.GetUnicodeCategory(it) + ""
+            ))
+            .ToArray();
+
+        _utf32Chars = _text.EnumerateRunes()
+            .Select((rune, Index) => new CharInfo(
+                Index, 
+                rune.ToString(), 
+                $"U+{rune.Value:X5}", 
+                char.GetUnicodeCategory(rune.ToString(), 0) + ""
+            ))
+            .ToArray();
+    }
+
+    protected override void OnInitialized()
+    {
+        Update();
+    }
+}
